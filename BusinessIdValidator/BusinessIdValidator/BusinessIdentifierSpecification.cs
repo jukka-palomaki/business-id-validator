@@ -12,6 +12,10 @@ namespace BusinessIdValidator
 
         private SortedSet<string> reasonsForDissatisfaction = new SortedSet<string>();
 
+        public BusinessIdentifierSpecification()
+        { 
+        }
+
         public IEnumerable<string> ReasonsForDissatisfaction 
         {
             get 
@@ -60,12 +64,13 @@ namespace BusinessIdValidator
             }
 
             //
-            if (businessId[BusinessIdLength-1].Equals("1"))//todo 
+            if (businessId.Length > BusinessIdLength - 1 &&
+                businessId[BusinessIdLength - 1].Equals("1")) 
             {
                 reasonsForDissatisfaction.Add("Business Id's check digit should be numeric.");
             }
 
-            return true;
+            return reasonsForDissatisfaction.Count == 0;
         }
  
     }
