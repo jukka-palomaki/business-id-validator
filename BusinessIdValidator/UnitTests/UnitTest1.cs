@@ -13,72 +13,63 @@ namespace UnitTests
         public void HandlesTooShortBusinessId()
         {
             ISpecification<string> spec = new BusinessIdentifierSpecification();
-            bool ok = spec.IsSatisfiedBy("1234567-");
-            Assert.IsFalse(ok);            
+            Assert.IsFalse(spec.IsSatisfiedBy("1234567-"));
         }
 
         [TestMethod]
         public void HandlesTooLongBusinessId()
         {
             ISpecification<string> spec = new BusinessIdentifierSpecification();
-            bool ok = spec.IsSatisfiedBy("1234567-89");
-            Assert.IsFalse(ok);
+            Assert.IsFalse(spec.IsSatisfiedBy("1234567-89"));
         }
 
         [TestMethod]
         public void HasCorrectBusinessIdLength()
         {
             ISpecification<string> spec = new BusinessIdentifierSpecification();
-            bool ok = spec.IsSatisfiedBy("0737546-2");
-            Assert.IsTrue(ok);
+            Assert.IsTrue(spec.IsSatisfiedBy("0737546-2"));
         }
 
         [TestMethod]
         public void HandlesNullBusinessId()
         {
             ISpecification<string> spec = new BusinessIdentifierSpecification();
-            bool ok = spec.IsSatisfiedBy(null);
-            Assert.IsFalse(ok);
+            Assert.IsFalse(spec.IsSatisfiedBy(null));
         }
 
         [TestMethod]
         public void HandlesEmptyBusinessId()
         {
             ISpecification<string> spec = new BusinessIdentifierSpecification();
-            bool ok = spec.IsSatisfiedBy("");
-            Assert.IsFalse(ok);
+            Assert.IsFalse(spec.IsSatisfiedBy(""));
         }
 
         [TestMethod]
         public void HasHyphenInCorrectPlace()
         {
             ISpecification<string> spec = new BusinessIdentifierSpecification();
-            bool ok = spec.IsSatisfiedBy("0737546-2");
-            Assert.IsTrue(ok);
+            Assert.IsTrue(spec.IsSatisfiedBy("0737546-2"));
         }
 
         [TestMethod]
         public void DoesNotHaveHyphenInCorrectPlace()
         {
             ISpecification<string> spec = new BusinessIdentifierSpecification();
-            bool ok = spec.IsSatisfiedBy("123456-79");
-            Assert.IsFalse(ok);
+            Assert.IsFalse(spec.IsSatisfiedBy("123456-79"));
         }
 
         [TestMethod]
         public void HasNumericFirstPart()
         {
             ISpecification<string> spec = new BusinessIdentifierSpecification();
-            bool ok = spec.IsSatisfiedBy("0737546-2");
-            Assert.IsTrue(ok);
+            Assert.IsTrue(spec.IsSatisfiedBy("0737546-2"));
         }
 
         [TestMethod]
         public void HandlesNonNumericFirstPart()
         {
             ISpecification<string> spec = new BusinessIdentifierSpecification();
-            bool ok = spec.IsSatisfiedBy("0x37546-2");
-            Assert.IsFalse(ok);
+            Assert.IsFalse(spec.IsSatisfiedBy("0x37546-2"));
         }
 
         [TestMethod]
@@ -92,8 +83,7 @@ namespace UnitTests
         public void HasCorrectCheckDigit()
         {
             BusinessIdentifierSpecification spec = new BusinessIdentifierSpecification();
-            bool ok = spec.HasCorrectCheckDigit("0737546-2");
-            Assert.IsTrue(ok);
+            Assert.IsTrue(spec.HasCorrectCheckDigit("0737546-2"));
         }
 
         [TestMethod]
@@ -134,7 +124,6 @@ namespace UnitTests
                 Console.WriteLine(reason);
                 reasonsCount++;
             }
-
             Assert.IsTrue(reasonsCount > 0);
         }
 
