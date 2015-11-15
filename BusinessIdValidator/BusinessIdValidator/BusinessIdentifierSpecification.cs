@@ -84,14 +84,11 @@ namespace BusinessIdValidator
                     reasonsForDissatisfaction.Add("Business Id's last character should be numeric.");
                 }
 
+                if (businessId.LastIndexOf('-') != 7)
+                {
+                    reasonsForDissatisfaction.Add("Business Id should have '-' character as 8th character.");
+                }
             }
-
-            
-            if (businessId.LastIndexOf('-') != 7)
-            {
-                reasonsForDissatisfaction.Add("Business Id should have '-' character as 8th character.");
-            }
-
 
             if (businessId.Length >= 3 &&
                 !HasIntegerValue(businessId.Substring(0, Math.Min(businessId.Length-3, 7))))
@@ -99,10 +96,9 @@ namespace BusinessIdValidator
                 reasonsForDissatisfaction.Add("Business Id's first seven characters should be numeric.");
             }
 
-
-            if (!HasCorrectCheckDigit(businessId)) 
+            if (!CheckCorrectCheckDigit(businessId)) 
             {
-                reasonsForDissatisfaction.Add("Business Id's check digit is not correct.");
+                //reasonsForDissatisfaction.Add("Business Id's check digit is not correct.");
             }
 
             return reasonsForDissatisfaction.Count == 0;
@@ -121,7 +117,7 @@ namespace BusinessIdValidator
             return true;
         }
 
-        public bool HasCorrectCheckDigit(string businessId)
+        public bool CheckCorrectCheckDigit(string businessId)
         {
             if (businessId == null || businessId.Length != BusinessIdLength )
             {
@@ -137,7 +133,17 @@ namespace BusinessIdValidator
                         sum += Int32.Parse(businessId[i].ToString()) * Multipliers[i];
                     }
                     
-                    int countedCheckDigit = 11 - sum % 11;
+                    int countedCheckDigit = sum % 11;
+                    if (countedCheckDigit == 1)
+                    {
+                        reasonsForDissatisfaction.Add("Business Id's first seven number's modulo 11 is not allowed to be 1.");
+                        return false;
+                    }
+                    else if (countedCheckDigit > 1) 
+                    {
+                        countedCheckDigit = 11 - countedCheckDigit;
+                    }
+
                     int givenCheckDigit = Int32.Parse(businessId[BusinessIdLength - 1].ToString());
 
                     if (countedCheckDigit == givenCheckDigit)
@@ -150,6 +156,7 @@ namespace BusinessIdValidator
                     Console.WriteLine(e.Message);
                 }
             }
+            reasonsForDissatisfaction.Add("Business Id's check digit is not correct.");
             return false;
         }
     }

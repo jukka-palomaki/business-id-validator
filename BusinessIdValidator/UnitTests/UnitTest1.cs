@@ -83,7 +83,14 @@ namespace UnitTests
         public void HasCorrectCheckDigit()
         {
             BusinessIdentifierSpecification spec = new BusinessIdentifierSpecification();
-            Assert.IsTrue(spec.HasCorrectCheckDigit("0737546-2"));
+            Assert.IsTrue(spec.CheckCorrectCheckDigit("0737546-2"));
+        }
+
+        [TestMethod]
+        public void DoesNotAllowModOne()
+        {
+            BusinessIdentifierSpecification spec = new BusinessIdentifierSpecification();
+            Assert.IsFalse(spec.CheckCorrectCheckDigit("1802465-1"));
         }
 
         [TestMethod]
@@ -95,15 +102,15 @@ namespace UnitTests
              * Normally unit tests should just have one assert per test method 
              * but in this case it is acceptable to have many asserts. 
              */
-            Assert.IsFalse(spec.HasCorrectCheckDigit("0737546-0"));
-            Assert.IsFalse(spec.HasCorrectCheckDigit("0737546-1"));
-            Assert.IsFalse(spec.HasCorrectCheckDigit("0737546-3"));
-            Assert.IsFalse(spec.HasCorrectCheckDigit("0737546-4"));
-            Assert.IsFalse(spec.HasCorrectCheckDigit("0737546-5"));
-            Assert.IsFalse(spec.HasCorrectCheckDigit("0737546-6"));
-            Assert.IsFalse(spec.HasCorrectCheckDigit("0737546-7"));
-            Assert.IsFalse(spec.HasCorrectCheckDigit("0737546-8"));
-            Assert.IsFalse(spec.HasCorrectCheckDigit("0737546-9"));
+            Assert.IsFalse(spec.CheckCorrectCheckDigit("0737546-0"));
+            Assert.IsFalse(spec.CheckCorrectCheckDigit("0737546-1"));
+            Assert.IsFalse(spec.CheckCorrectCheckDigit("0737546-3"));
+            Assert.IsFalse(spec.CheckCorrectCheckDigit("0737546-4"));
+            Assert.IsFalse(spec.CheckCorrectCheckDigit("0737546-5"));
+            Assert.IsFalse(spec.CheckCorrectCheckDigit("0737546-6"));
+            Assert.IsFalse(spec.CheckCorrectCheckDigit("0737546-7"));
+            Assert.IsFalse(spec.CheckCorrectCheckDigit("0737546-8"));
+            Assert.IsFalse(spec.CheckCorrectCheckDigit("0737546-9"));
         }
 
         [TestMethod]
