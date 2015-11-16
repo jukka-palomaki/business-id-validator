@@ -171,21 +171,21 @@ namespace UnitTests
         [TestMethod]
         public void InspectCorrectCheckDigitHandlesNullValues()
         {
-            BusinessIdentifierSpecification spec = new BusinessIdentifierSpecification();
+            BusinessIdentifierSpecification spec = new BusinessIdentifierSpecification(new int[] { 7, 9, 10, 5, 8, 4, 2 });
             spec.InspectCorrectCheckDigit(null);
         }
 
         [TestMethod]
         public void InspectCorrectCheckDigitHandlesNullId()
         {
-            BusinessIdentifierSpecification spec = new BusinessIdentifierSpecification();
+            BusinessIdentifierSpecification spec = new BusinessIdentifierSpecification(new int[] { 7, 9, 10, 5, 8, 4, 2 });
             spec.InspectCorrectCheckDigit(new BusinessId(null));
         }
 
         [TestMethod]
         public void InspectCorrectCheckDigitHandlesEmptyId()
         {
-            BusinessIdentifierSpecification spec = new BusinessIdentifierSpecification();
+            BusinessIdentifierSpecification spec = new BusinessIdentifierSpecification(new int[] { 7, 9, 10, 5, 8, 4, 2 });
             spec.InspectCorrectCheckDigit(new BusinessId(""));
         }
 

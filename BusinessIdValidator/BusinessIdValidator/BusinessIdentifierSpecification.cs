@@ -16,20 +16,13 @@ namespace BusinessIdValidator
         /*
          * Multipliers for each first seven first digits of BusinessId
          */
-        protected int[] multipliers = new int[] { 7, 9, 10, 5, 8, 4, 2 };
-
-        public int[] Multipliers {
-            get
-            {
-                return multipliers;
-            }
-       }
+        private int[] multipliers;
 
         private SortedSet<string> reasonsForDissatisfaction = new SortedSet<string>();
 
-        public BusinessIdentifierSpecification()
+        public BusinessIdentifierSpecification(int[] multiplierArray)
         {
-
+            this.multipliers = multiplierArray;
         }
 
 
@@ -67,11 +60,11 @@ namespace BusinessIdValidator
 
             if (businessId.Id.Length > BusinessIdLength)
             {
-                reasonsForDissatisfaction.Add("Business Id is too long. It should be " + BusinessIdLength + " characters long.");
+                reasonsForDissatisfaction.Add(String.Format("Business Id is too long. It should be {0} characters long.", BusinessIdLength));
             }
             else if (businessId.Id.Length < BusinessIdLength)
             {
-                reasonsForDissatisfaction.Add("Business Id is too short. It should be " + BusinessIdLength + " characters long.");
+                reasonsForDissatisfaction.Add(String.Format("Business Id is too short. It should be {0} characters long.", BusinessIdLength));
 
             }
 
@@ -121,7 +114,7 @@ namespace BusinessIdValidator
                     int sum = 0;
                     for (int i = 0; i < FirstPartLength; i++)
                     {
-                        sum += Int32.Parse(businessId.Id[i].ToString()) * Multipliers[i];
+                        sum += Int32.Parse(businessId.Id[i].ToString()) * multipliers[i];
                     }
 
                     int countedCheckDigit = sum % Divider;
