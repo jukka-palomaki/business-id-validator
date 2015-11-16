@@ -16,7 +16,7 @@ namespace BusinessIdValidator
         /*
          * Multipliers for each first seven first digits of BusinessId
          */
-        private int[] multipliers = new int[] { 7, 9, 10, 5, 8, 4, 2 };
+        protected int[] multipliers = new int[] { 7, 9, 10, 5, 8, 4, 2 };
 
         public int[] Multipliers {
             get
@@ -32,32 +32,6 @@ namespace BusinessIdValidator
 
         }
 
-        public BusinessIdentifierSpecification(MessageLanguage language)
-        {
-            CreateReasonMessages(language);
-        }
-
-        private void CreateReasonMessages(MessageLanguage language)
-        {
-            List<ReasonForDissatisfaction> allReasons = new List<ReasonForDissatisfaction>();
-
-            int id = 1;
-            allReasons.Add(new ReasonForDissatisfaction(id++, "", MessageLanguage.FI));
-
-
-            /*switch (language)
-            {
-                case MessageLanguage.FI:
-                    break;
-                case MessageLanguage.SE:
-                    break;
-                case MessageLanguage.EN:
-                    break;
-                default:
-                    break;
-            }*/
-
-        }
 
         public IEnumerable<string> ReasonsForDissatisfaction 
         {
@@ -68,27 +42,26 @@ namespace BusinessIdValidator
             
         }
 
-        protected void AddReason(string reason)        
-        {
-            reasonsForDissatisfaction.Add(reason);
-        }
-
         public bool IsSatisfiedBy(BusinessId businessId)
         {
-            if (businessId == null || businessId.Id == null)
+            if (businessId == null)
             {
                 reasonsForDissatisfaction.Add("Business Id cannot be null.");
                 return false;
             }
+            else if (businessId.Id == null)
+            {
+                reasonsForDissatisfaction.Add("Business Id's value cannot be null.");
+                return false;
+            }
             else if (String.IsNullOrEmpty(businessId.Id))
             {
-                reasonsForDissatisfaction.Add("Business Id cannot be an empty string.");
+                reasonsForDissatisfaction.Add("Business Id's value cannot be an empty string.");
                 return false;
             }
             else if (String.IsNullOrWhiteSpace(businessId.Id))
             {
-                AddReason("Business Id cannot be just white space(s).");
-                //reasonsForDissatisfaction.Add("Business Id cannot be just white space(s).");
+                reasonsForDissatisfaction.Add("Business Id's value cannot be just white space(s).");
                 return false;
             }
 
@@ -110,7 +83,7 @@ namespace BusinessIdValidator
             else
             {
                 if (businessId.Id.Length > 1 &&
-                    !StringHelper.HasIntegerValue(businessId.Id.Substring(businessId.Id.LastIndexOf('-') + 1)))
+                    !CheckHelper.HasIntegerValue(businessId.Id.Substring(businessId.Id.LastIndexOf('-') + 1)))
                 {
                     reasonsForDissatisfaction.Add("Business Id's last character should be numeric.");
                 }
@@ -122,21 +95,22 @@ namespace BusinessIdValidator
             }
 
             if (businessId.Id.Length >= 3 &&
-                !StringHelper.HasIntegerValue(businessId.Id.Substring(0, Math.Min(businessId.Id.Length - 3, FirstPartLength))))
+                !CheckHelper.HasIntegerValue(businessId.Id.Substring(0, Math.Min(businessId.Id.Length - 3, FirstPartLength))))
             {
                 reasonsForDissatisfaction.Add("Business Id's first seven characters should be numeric.");
             }
 
-            CheckCorrectCheckDigit(businessId);
+            InspectCorrectCheckDigit(businessId);
 
             return reasonsForDissatisfaction.Count == 0;
         }
 
 
 
-        public bool CheckCorrectCheckDigit(BusinessId businessId)
+        public bool InspectCorrectCheckDigit(BusinessId businessId)
         {
-            if (businessId == null || businessId.Id.Length != BusinessIdLength )
+            if (businessId == null || businessId.Id == null 
+                || businessId.Id.Length != BusinessIdLength)
             {
                 return false;
             }

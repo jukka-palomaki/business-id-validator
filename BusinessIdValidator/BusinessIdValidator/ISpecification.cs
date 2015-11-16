@@ -12,13 +12,4 @@ namespace BusinessIdValidator
         bool IsSatisfiedBy(TEntity entity);
     }
 
-    /*
-     * Add here all the id types for which you are going to implement a specification
-     */ 
-    public enum IdType
-    {
-        BusinessId,
-        VatIdEu //not implemented
-
-    }
 }
