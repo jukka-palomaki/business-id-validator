@@ -40,8 +40,14 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BusinessIdentifierSpecification.cs" />
+    <Compile Include="IdentifierSpecificationFactory.cs" />
+    <Compile Include="Identifier\BusinessId.cs" />
+    <Compile Include="Identifier\Identifier.cs" />
+    <Compile Include="Identifier\VatId.cs" />
     <Compile Include="ISpecification.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ReasonForDissatisfaction.cs" />
+    <Compile Include="StringHelper.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using BusinessIdValidator.Identifier;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,9 +7,10 @@ using System.Threading.Tasks;
 
 namespace BusinessIdValidator
 {
-    public class BusinessIdentifierSpecification : ISpecification<string> 
+    public class BusinessIdentifierSpecification : ISpecification<BusinessId> 
     {
         public const int BusinessIdLength = 9;
+        public const int FirstPartLength = 7;
         public const int Divider = 11;             
         
         /*
@@ -26,7 +28,35 @@ namespace BusinessIdValidator
         private SortedSet<string> reasonsForDissatisfaction = new SortedSet<string>();
 
         public BusinessIdentifierSpecification()
-        { 
+        {
+
+        }
+
+        public BusinessIdentifierSpecification(MessageLanguage language)
+        {
+            CreateReasonMessages(language);
+        }
+
+        private void CreateReasonMessages(MessageLanguage language)
+        {
+            List<ReasonForDissatisfaction> allReasons = new List<ReasonForDissatisfaction>();
+
+            int id = 1;
+            allReasons.Add(new ReasonForDissatisfaction(id++, "", MessageLanguage.FI));
+
+
+            /*switch (language)
+            {
+                case MessageLanguage.FI:
+                    break;
+                case MessageLanguage.SE:
+                    break;
+                case MessageLanguage.EN:
+                    break;
+                default:
+                    break;
+            }*/
+
         }
 
         public IEnumerable<string> ReasonsForDissatisfaction 
@@ -43,83 +73,70 @@ namespace BusinessIdValidator
             reasonsForDissatisfaction.Add(reason);
         }
 
-        public bool IsSatisfiedBy(string businessId)
+        public bool IsSatisfiedBy(BusinessId businessId)
         {
-            if (businessId == null)
+            if (businessId == null || businessId.Id == null)
             {
                 reasonsForDissatisfaction.Add("Business Id cannot be null.");
                 return false;
             }
-            else if (String.IsNullOrEmpty(businessId))
+            else if (String.IsNullOrEmpty(businessId.Id))
             {
                 reasonsForDissatisfaction.Add("Business Id cannot be an empty string.");
                 return false;
             }
-            else if (String.IsNullOrWhiteSpace(businessId))
+            else if (String.IsNullOrWhiteSpace(businessId.Id))
             {
-                reasonsForDissatisfaction.Add("Business Id cannot be just white space(s).");
+                AddReason("Business Id cannot be just white space(s).");
+                //reasonsForDissatisfaction.Add("Business Id cannot be just white space(s).");
                 return false;
             }
 
-            if (businessId.Length > BusinessIdLength)
+            if (businessId.Id.Length > BusinessIdLength)
             {
                 reasonsForDissatisfaction.Add("Business Id is too long. It should be " + BusinessIdLength + " characters long.");
             }
-            else if (businessId.Length < BusinessIdLength)
+            else if (businessId.Id.Length < BusinessIdLength)
             {
                 reasonsForDissatisfaction.Add("Business Id is too short. It should be " + BusinessIdLength + " characters long.");
 
             }
 
-            if (!businessId.Contains('-'))
+            if (!businessId.Id.Contains('-'))
             {
                 reasonsForDissatisfaction.Add("Business Id should contain '-' character.");
 
             }
             else
             {
-                if (businessId.Length > 1 && 
-                    !HasIntegerValue(businessId.Substring(businessId.LastIndexOf('-') + 1)))
+                if (businessId.Id.Length > 1 &&
+                    !StringHelper.HasIntegerValue(businessId.Id.Substring(businessId.Id.LastIndexOf('-') + 1)))
                 {
                     reasonsForDissatisfaction.Add("Business Id's last character should be numeric.");
                 }
 
-                if (businessId.LastIndexOf('-') != 7)
+                if (businessId.Id.LastIndexOf('-') != FirstPartLength)
                 {
                     reasonsForDissatisfaction.Add("Business Id should have '-' character as 8th character.");
                 }
             }
 
-            if (businessId.Length >= 3 &&
-                !HasIntegerValue(businessId.Substring(0, Math.Min(businessId.Length-3, 7))))
+            if (businessId.Id.Length >= 3 &&
+                !StringHelper.HasIntegerValue(businessId.Id.Substring(0, Math.Min(businessId.Id.Length - 3, FirstPartLength))))
             {
                 reasonsForDissatisfaction.Add("Business Id's first seven characters should be numeric.");
             }
 
-            if (!CheckCorrectCheckDigit(businessId)) 
-            {
-                //reasonsForDissatisfaction.Add("Business Id's check digit is not correct.");
-            }
+            CheckCorrectCheckDigit(businessId);
 
             return reasonsForDissatisfaction.Count == 0;
         }
 
-        public static bool HasIntegerValue(string value)
-        {
-            try
-            {
-                Int32.Parse(value);
-            }
-            catch (FormatException e)
-            {
-                return false;
-            }
-            return true;
-        }
 
-        public bool CheckCorrectCheckDigit(string businessId)
+
+        public bool CheckCorrectCheckDigit(BusinessId businessId)
         {
-            if (businessId == null || businessId.Length != BusinessIdLength )
+            if (businessId == null || businessId.Id.Length != BusinessIdLength )
             {
                 return false;
             }
@@ -128,12 +145,12 @@ namespace BusinessIdValidator
                 try
                 {
                     int sum = 0;
-                    for (int i = 0; i < 7; i++)
+                    for (int i = 0; i < FirstPartLength; i++)
                     {
-                        sum += Int32.Parse(businessId[i].ToString()) * Multipliers[i];
+                        sum += Int32.Parse(businessId.Id[i].ToString()) * Multipliers[i];
                     }
-                    
-                    int countedCheckDigit = sum % 11;
+
+                    int countedCheckDigit = sum % Divider;
                     if (countedCheckDigit == 1)
                     {
                         reasonsForDissatisfaction.Add("Business Id's first seven number's modulo 11 is not allowed to be 1.");
@@ -141,19 +158,19 @@ namespace BusinessIdValidator
                     }
                     else if (countedCheckDigit > 1) 
                     {
-                        countedCheckDigit = 11 - countedCheckDigit;
+                        countedCheckDigit = Divider - countedCheckDigit;
                     }
 
-                    int givenCheckDigit = Int32.Parse(businessId[BusinessIdLength - 1].ToString());
+                    int givenCheckDigit = Int32.Parse(businessId.Id[BusinessIdLength - 1].ToString());
 
                     if (countedCheckDigit == givenCheckDigit)
                     {
                         return true;
                     }
                 }
-                catch (FormatException e)
+                catch (FormatException)
                 {
-                    Console.WriteLine(e.Message);
+                    reasonsForDissatisfaction.Add("Business Id should contain only numbers and one '-' character.");
                 }
             }
             reasonsForDissatisfaction.Add("Business Id's check digit is not correct.");
